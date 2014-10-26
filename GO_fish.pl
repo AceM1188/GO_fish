@@ -93,16 +93,14 @@ if ($data_type eq 'cuffdiff') {
      foreach my $gene (keys %comphash){
          print "$gene\t",$comphash{$gene}{'fpkm'},"\t",$comphash{$gene}{'conf_lo'},"\t",$comphash{$gene}{'conf_hi'},"\t",$comphash{$gene}{'coord'},"\n";}}
 
- 
- # if ($data_type eq 'CGH_Array') {
- #     print "Gene Symbol\tProbe Set\tSample\tp-val\tCopy Number Variation\n";
- #     foreach my $gene (keys %comphash){
- # 	print "$gene\t";
- # 	foreach my $probeset(keys %{$comphash{$gene}}){
- # 	    print "$probeset\t";
- # 	    foreach my $sample (keys %{$comphash{$gene}{$probeset}}){
- # 		print "$sample\t",$comphash{$gene}{$probeset}{'p-val'}, "\t", $comphash{$gene}{$probeset}{'CNV'}, "\n";
- # 	    }
- # 	}
- #     }
- # }
+
+if ($data_type eq 'CGH_array') {
+      print "Gene Symbol\tProbe Set\tSample\tp-val\tCopy Number Variation\n";
+      foreach my $gene (keys %comphash){
+	  foreach my $probeset(keys %{$comphash{$gene}}){
+ 	    foreach my $sample (keys %{$comphash{$gene}{$probeset}}){
+ 		print "$gene\t$probeset\t$sample\t",$comphash{$gene}{$probeset}{$sample}{'p-val'}, "\t", $comphash{$gene}{$probeset}{$sample}{'CNV'}, "\n";
+ 	    }
+ 	}
+      }
+}
