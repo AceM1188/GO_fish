@@ -16,20 +16,22 @@ print start_html('GO fishing with GO terms'),
     "Upload file here: ",filefield(-name=>'upload_data'),br,br, 
     h3("GO search"),
     "Search parameters:",br
-    "   Can use GO terms (GO:00000000) or key words (use single quotes to group key words)",br,
+    "One per line, can use GO terms (GO:00000000) or key words (use single quotes to group key words)",br,
     textarea(-name=>'GO_terms and search terms', -rows=>5, -cols=>40),br,br,
     "Search type:", radio_group(-name=>'Search_Mode', -value=>\@search_modes, -default=>$search_modes[0]),br,
 submit('Search'),
-end_form,
+    end_form,
     hr;
 my $organism = param ('Genus');
 my $file_upload = param ('upload_data');
 my $data_type = param ('data_type');
 my $search_mode = param ('Search_Mode');
 my $term = param ('GO_terms and search terms');
-my @terms = split (/\s/, $term);
-my $string = join(/ /,  @terms);
+my @terms = split (/\n/, $term);
+my $string = join(" ",  @terms);
 
+#print h3("search terms:","@terms"), br
+#    "search string:",$string, br;
 #print h2("@results = `GO_fish.pl --mode CGI --organism $organism --data $file_upload --data_type $data_type --search_mode $search_mode --terms @terms`");
 #open (IN,'<','omp_v_ngn_gene_exp.diff') or die "can't read";
 #$file_upload = *IN;
@@ -40,12 +42,20 @@ my $string = join(/ /,  @terms);
 
 my $tmp = "/tmp/gofish.$$";
 open (OUT, '>', $tmp) or die "can't write";
+unless ($file_upload){
+    print h2("Please provide a data file."), br;
+    die;
+}
+
 while (my $line = <$file_upload>){ 
     print OUT $line;
 }
 #my $cmd = "GO_fish.pl --run_mode CGI --organism $organism --data $tmp --data_type $data_type --search_mode $search_mode --terms $string\n";
+#print h3($cmd), br;
 @results = `/home/gofish/GO_fish.pl --run_mode CGI --organism $organism --data $tmp --data_type $data_type --search_mode $search_mode --terms $string`;
-
-h3(print join (/--/,@results));
-print '';
+my $count = scalar @results;
+for (my $t=0; $t<$count; $t++){
+    print "$results[$t]",br;
+}
+#print "@results", br;
 print end_html;

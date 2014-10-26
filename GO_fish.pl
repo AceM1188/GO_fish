@@ -26,6 +26,10 @@ GetOptions ( "organism=s", \$organism,
 	     "data_type=s", \$data_type,
 	     "search_mode=s", \$search_mode,
     );
+if ($run_mode eq 'CGI'){
+    print'';
+}
+
 unless ($terms[0] and $data_file and $data_type) {
     warn "$usage\n";
     exit();
