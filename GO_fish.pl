@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use lib "/home/gofish";
 use Getopt::Long;
-#use GO_to_genes;
+use GO_Terms;
 use parse_cuffdiff;
 use Data::Dumper;
 
@@ -12,7 +12,7 @@ use Data::Dumper;
 #-------------------------------------------#
 my $organism;
 my $data_file;
-my $GO_term1;
+my $GO_term1 = 'GO:0045666'; #test data for Neurog1
 my $usage = "\nsyntax:\nGO_fish.pl --organism organism   --data data.file  --GO_term1 GO_number\n"; 
 GetOptions ( "organism=s", \$organism,
 	     "data=s", \$data_file,
@@ -27,11 +27,10 @@ unless ($GO_term1 and $data_file) {
 #Search GO with term#
 #-------------------#
 #Returns gene symbols in an array 
-#my @go_hits = sub go_to_genes ($organism,$GO_term1);
 
 #TEST DATA
 my @go_hits = qw(CASR CDH23 GAB3 GLS);
-
+my @go_hits = go_terms($organism,$GO_term1);
 
 
 #--------------------------#
