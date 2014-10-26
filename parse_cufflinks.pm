@@ -7,10 +7,9 @@ use base 'Exporter';
 our @EXPORT = qw(parse_cufflinks);
 sub parse_cufflinks{
     my $input = shift;
-    open(IN, '<', $input) or die "can't open file $input $!\n";
     my @features;
     my %genes;
-while(my $line = <IN>){
+while(my $line = <$input>){
     chomp $line;
     @features = split("\t",$line);
     my $gene = uc($features[0]);

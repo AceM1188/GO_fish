@@ -11,13 +11,11 @@ our @EXPORT = qw(parse_cuffdiff);
 
 sub parse_cuffdiff{
 my $input = shift;
-open(IN, '<', $input) or die "can't open file $input $!\n";
-
 my @features;
 #my @info;
 my %genes;
 
-while(my $line = <IN>){
+while(my $line = <$input>){
     chomp $line;
     @features = split("\t",$line);
 

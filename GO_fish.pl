@@ -5,22 +5,33 @@ use lib "/home/gofish";
 use Getopt::Long;
 use GO_Terms;
 use parse_cuffdiff;
+use parse_cufflinks;
 use Data::Dumper;
 
 #-------------------------------------------#
 #Can enter default values for arguments here#
 #-------------------------------------------#
 my $organism;
+my $search_mode= 'AND';
+my $run_mode = 'command'; #defaults to command line unless called by cgi script
 my $data_file;
-my $GO_term1 = 'GO:0045666'; #test data for Neurog1
-my $usage = "\nsyntax:\nGO_fish.pl --organism organism   --data data.file  --GO_term1 GO_number\n"; 
+my $data_type;
+my @terms; #= 'GO:0045666' #test data for Neurog1
+my $usage = "\nsyntax:\nGO_fish.pl --organism organism   --data data.file"; 
 GetOptions ( "organism=s", \$organism,
 	     "data=s", \$data_file,
-	     "GO_term1=s", \$GO_term1,
+	     "terms=s{1,}", \@terms,
+	     "run_mode=s", \$run_mode,
+	     "data_type=s", \$data_type,
+	     "search_mode=s", \$search_mode,
     );
-unless ($GO_term1 and $data_file) {
+unless ($terms[0] and $data_file) {
     warn "$usage\n";
     exit();
+}
+if ($run_mode eq 'command'){  
+    open (IN, '<', $data_file);
+    $data_file= *IN;
 }
 
 #-------------------#
@@ -29,16 +40,26 @@ unless ($GO_term1 and $data_file) {
 #Returns gene symbols in an array 
 
 #TEST DATA
-my @go_hits = qw(CASR CDH23 GAB3 GLS);
-my @go_hits = go_terms($organism,$GO_term1);
+#my @go_hits = qw(CASR CDH23 GAB3 GLS);
+unshift(@terms,$search_mode,$organism);
+my @go_hits = go_terms(@terms);
 
 
 #--------------------------#
-#Parse cuffdiff_output data#
+#Parse gene data#
 #--------------------------#
 #Returns hash reference, contains gene symbol paired with hash containing info 
-my $parsed_data = parse_cuffdiff($data_file);
-my %genes = %{$parsed_data};
+my %genes;
+if ($data_type eq 'cuffdiff') {
+    my $parsed_data = parse_cuffdiff($data_file);
+    %genes = %{$parsed_data};
+}
+if ($data_type eq 'cufflinks') {
+    my $parsed_data = parse_cufflinks($data_file);
+}
+#if ($data_type eq 'CGH_array') {
+#    my $parsed_data = parse_CGH_array($data_file);
+#}
 #print Dumper %genes;
 
 
