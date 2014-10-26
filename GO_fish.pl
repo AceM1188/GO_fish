@@ -30,10 +30,9 @@ unless ($terms[0] and $data_file and $data_type) {
     warn "$usage\n";
     exit();
 }
-if ($run_mode eq 'command'){  
-    open (IN, '<', $data_file);
-    $data_file= *IN;
-}
+open (IN, '<', $data_file) or die "can't open";
+$data_file = *IN;
+
 
 #-------------------#
 #Search GO with term#
