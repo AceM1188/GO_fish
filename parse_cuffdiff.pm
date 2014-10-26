@@ -3,23 +3,18 @@ package parse_cuffdiff;
 use warnings;
 use strict;
 #use Data::Dumper;
-
 use base 'Exporter';
-
 our @EXPORT = qw(parse_cuffdiff);
-
-
 sub parse_cuffdiff{
-my $input = shift;
-my @features;
+    my $input = shift;
+    my $fold_cutoff = shift;
+    my @features;
 #my @info;
-my %genes;
-
-while(my $line = <$input>){
-    chomp $line;
-    @features = split("\t",$line);
-
-    if($features[13] =~ /yes/) {
+    my %genes;
+    while(my $line = <$input>){
+	chomp $line;
+	@features = split("\t",$line);
+	if($features[13] =~ /yes/) {
         my $significance = $features[0];
         $significance = uc($significance);
 #locates genes with indicated significant fold change                                                 

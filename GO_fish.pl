@@ -6,6 +6,7 @@ use Getopt::Long;
 use GO_Terms;
 use parse_cuffdiff;
 use parse_cufflinks;
+use parse_cgh;
 use Data::Dumper;
 
 #-------------------------------------------#
@@ -53,14 +54,13 @@ my %genes;
 my $parsed_data;
 if ($data_type eq 'cuffdiff') {
     $parsed_data = parse_cuffdiff($data_file);
-    %genes = %{$parsed_data};
 }
 if ($data_type eq 'cufflinks') {
     $parsed_data = parse_cufflinks($data_file);
 }
-#if ($data_type eq 'CGH_array') {
-#    my $parsed_data = parse_CGH_array($data_file);
-#}
+if ($data_type eq 'CGH_array') {
+    $parsed_data = parse_cgh($data_file);
+}
 %genes = %{$parsed_data};
 #print Dumper %genes;
 #print '';
@@ -81,8 +81,28 @@ foreach my $hit (@go_hits){
 #--------------------------------------------#
 #Print tab delimited GO hits with parsed data#
 #--------------------------------------------#
-print "Gene Symbol\tSample 1\tSample 2\tlog2fold\tp-val\n";
-foreach my $gene (keys %comphash){
-    print "$gene\t",$comphash{$gene}{'Sample 1'},"\t",$comphash{$gene}{'Sample 2'},"\t",$comphash{$gene}{'log2fold'},"\t",$comphash{$gene}{'p-val'},"\n";
+if ($data_type eq 'cuffdiff') {
+    print "Gene Symbol\tSample 1\tSample 2\tlog2fold\tp-val\n";
+    foreach my $gene (keys %comphash){
+	print "$gene\t",$comphash{$gene}{'Sample 1'},"\t",$comphash{$gene}{'Sample 2'},"\t",$comphash{$gene}{'log2fold'},"\t",$comphash{$gene}{'p-val'},"\n";
+    }
 }
-print '';
+
+ if ($data_type eq 'cufflinks') {
+     print "Gene Symbol\tFPKM\tLow Confidence Interval\tHigh Confidence Interval\tGene Coordinates\n";
+     foreach my $gene (keys %comphash){
+         print "$gene\t",$comphash{$gene}{'fpkm'},"\t",$comphash{$gene}{'conf_lo'},"\t",$comphash{$gene}{'conf_hi'},"\t",$comphash{$gene}{'coord'},"\n";}}
+
+ 
+ # if ($data_type eq 'CGH_Array') {
+ #     print "Gene Symbol\tProbe Set\tSample\tp-val\tCopy Number Variation\n";
+ #     foreach my $gene (keys %comphash){
+ # 	print "$gene\t";
+ # 	foreach my $probeset(keys %{$comphash{$gene}}){
+ # 	    print "$probeset\t";
+ # 	    foreach my $sample (keys %{$comphash{$gene}{$probeset}}){
+ # 		print "$sample\t",$comphash{$gene}{$probeset}{'p-val'}, "\t", $comphash{$gene}{$probeset}{'CNV'}, "\n";
+ # 	    }
+ # 	}
+ #     }
+ # }

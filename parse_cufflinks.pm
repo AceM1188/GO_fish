@@ -9,14 +9,19 @@ sub parse_cufflinks{
     my $input = shift;
     my @features;
     my %genes;
-while(my $line = <$input>){
-    chomp $line;
-    @features = split("\t",$line);
-    my $gene = uc($features[0]);
-    $genes{$gene}{'fpkm'} = $features[9];
-    $genes{$gene}{'conf_lo'} = $features[10];
-    $genes{$gene}{'conf_hi'} = $features[11];
-    $genes{$gene}{'coord'} = $features[6];
+    my $line_counter = 0;
+    while(my $line = <$input>){
+	chomp $line;
+	if ($line_counter == 0) {
+	$line_counter++;    next;
+	}
+	@features = split("\t",$line);
+	my $gene = uc($features[0]);
+	$genes{$gene}{'fpkm'} = $features[9];
+	$genes{$gene}{'conf_lo'} = $features[10];
+	$genes{$gene}{'conf_hi'} = $features[11];
+	$genes{$gene}{'coord'} = $features[6];
+	
 }
 #    print Dumper %genes;
 #    print '';
