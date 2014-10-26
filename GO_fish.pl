@@ -17,7 +17,7 @@ my $run_mode = 'command'; #defaults to command line unless called by cgi script
 my $data_file;
 my $data_type;
 my @terms; #= 'GO:0045666' #test data for Neurog1
-my $usage = "\nsyntax:\nGO_fish.pl --organism organism   --data data.file"; 
+my $usage = "\nsyntax:\nGO_fish.pl --organism Genus --data data.file --data_type cuffdiff/cufflinks --search_mode 'AND'/'OR' --terms GO:0000000/'key words'\n"; 
 GetOptions ( "organism=s", \$organism,
 	     "data=s", \$data_file,
 	     "terms=s{1,}", \@terms,
@@ -25,7 +25,7 @@ GetOptions ( "organism=s", \$organism,
 	     "data_type=s", \$data_type,
 	     "search_mode=s", \$search_mode,
     );
-unless ($terms[0] and $data_file) {
+unless ($terms[0] and $data_file and $data_type) {
     warn "$usage\n";
     exit();
 }
@@ -43,31 +43,32 @@ if ($run_mode eq 'command'){
 #my @go_hits = qw(CASR CDH23 GAB3 GLS);
 unshift(@terms,$search_mode,$organism);
 my @go_hits = go_terms(@terms);
-
-
+#print Dumper @go_hits;
+print '';
 #--------------------------#
 #Parse gene data#
 #--------------------------#
 #Returns hash reference, contains gene symbol paired with hash containing info 
 my %genes;
+my $parsed_data;
 if ($data_type eq 'cuffdiff') {
-    my $parsed_data = parse_cuffdiff($data_file);
+    $parsed_data = parse_cuffdiff($data_file);
     %genes = %{$parsed_data};
 }
 if ($data_type eq 'cufflinks') {
-    my $parsed_data = parse_cufflinks($data_file);
+    $parsed_data = parse_cufflinks($data_file);
 }
 #if ($data_type eq 'CGH_array') {
 #    my $parsed_data = parse_CGH_array($data_file);
 #}
+%genes = %{$parsed_data};
 #print Dumper %genes;
-
+#print '';
 
 
 #--------------------------------#
 #Recover GO hits from parsed data#
 #--------------------------------#
-
 my %comphash;
 foreach my $hit (@go_hits){
     if ($genes{$hit}){

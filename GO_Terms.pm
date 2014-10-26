@@ -48,6 +48,7 @@ sub go_terms{
 		    ); print STDERR "Didn't choke at association!\n";
 	    }
 	    foreach my $assoc (@{$assocs}) {
+		next if(!defined $assoc->gene_product->species->genus);
 		if ($assoc->gene_product->species->genus eq $genus){
 		    push @golist,uc( $assoc->gene_product->symbol); 
 		}
@@ -58,35 +59,31 @@ sub go_terms{
 	
     if ($mode eq "AND"){
 	foreach my $search(@sterm){
-	    
-	    
+	    my @golist2;
 	    if ($search=~ /^GO/){
 		$term = $apph->get_term({acc=>$search});
 		$assocs = $apph->get_associations(
 		    -term=>$term
 		    );
-	     
 	    }
 	    else{
-		
 		$term = $apph->get_terms(
 		    {search=>"*$search*",
 		     search_fields=>"name,synonym"}
 		    );
-		
-		
 		$assocs = $apph->get_associations(
 		    -term=>$term
 		    );
 	    }
-	    
-	    
+ 
 	    foreach my $assoc (@{$assocs}) {
+		next if(!defined $assoc->gene_product->species->genus);
 		if ($assoc->gene_product->species->genus eq $genus){
 		    push (@golist2, $assoc->gene_product->symbol);
 		}
 	    }
 	    @golist2 = uniq @golist2;
+	    
 	    foreach my $gene(@golist2){
 		$andhash{$gene}++;
 		
@@ -96,8 +93,9 @@ sub go_terms{
 	
 	foreach my $key (keys %andhash){
 	    $count++;
-	    if ($andhash{$key}==$count){
+	    if ($andhash{$key}==scalar @sterm){
 		push (@golist, uc($key));
+	     
 	    }
 	}
     }
