@@ -28,27 +28,24 @@ my $data_type = param ('data_type');
 my $search_mode = param ('Search_Mode');
 my $term = param ('GO_terms and search terms');
 my @terms = split (/\s/, $term);
+my $string = join(/ /,  @terms);
 
 #print h2("@results = `GO_fish.pl --mode CGI --organism $organism --data $file_upload --data_type $data_type --search_mode $search_mode --terms @terms`");
+#open (IN,'<','omp_v_ngn_gene_exp.diff') or die "can't read";
+#$file_upload = *IN;
+#$organism = 'Mus';
+#$data_type = 'cuffdiff';
+#$search_mode = 'AND';
+#my $string = 'GO:0045666';
 
-
-open (IN,'<','omp_v_ngn_gene_exp.diff') or die "can't read";
-$file_upload = *IN;
-$organism = 'Mus';
-$data_type = 'cuffdiff';
-$search_mode = 'AND';
-my $terms = 'GO:0045666';
 my $tmp = "/tmp/gofish.$$";
-
 open (OUT, '>', $tmp) or die "can't write";
-
-while (my $line = <IN>){ 
+while (my $line = <$file_upload>){ 
     print OUT $line;
 }
+#my $cmd = "GO_fish.pl --run_mode CGI --organism $organism --data $tmp --data_type $data_type --search_mode $search_mode --terms $string\n";
+@results = `/home/gofish/GO_fish.pl --run_mode CGI --organism $organism --data $tmp --data_type $data_type --search_mode $search_mode --terms $string`;
 
-my $cmd = "GO_fish.pl --mode CGI --organism $organism --data $tmp --data_type $data_type --search_mode $search_mode --terms $terms\n";
-@results = `GO_fish.pl --mode CGI --organism $organism --data $tmp --data_type $data_type --search_mode $search_mode --terms $terms`;
-
-
+h3(print join (/--/,@results));
 print '';
 print end_html;
