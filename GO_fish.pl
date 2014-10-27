@@ -18,22 +18,27 @@ my $search_mode= 'AND';
 my $run_mode = 'command'; #defaults to command line unless called by cgi script
 my $data_file;
 my $data_type;
+my $GO_evcode_filter= '!IEA';
 my $p_val;
+my $cnv_cutoff;
 my @terms; #= 'GO:0045666' #test data for Neurog1
-my $usage = "\nsyntax:\nGO_fish.pl --organism Genus --data data.file --data_type cuffdiff/cufflinks --search_mode 'AND'/'OR' --terms GO:0000000/'key words'\nBy default cuffdiff data is filtered by the cuffdiff significance call.\nIf --p_value is set to a value it will use p-value to filter instead"; 
+my $usage = "\nsyntax:\nGO_fish.pl --organism Genus --data data.file --data_type cuffdiff/cufflinks/CGH_array --search_mode 'AND'/'OR' --terms GO:0000000/'key words'\n
+Optional GO filter: --evcode 'GO_evcode' \nFilter GO search by evidence code. Multiple evidence codes can be used by stringing them together eg 'GO_evcode1--GO_evcode2--GO_evcode3' \n\nOptional data filters: --cnv_cutoff (for CGH_array) and --p_value (for cuffdiff)\nThese override default behavior for these modes filtering based on the set cutoff\n\n"; 
 GetOptions ( "organism=s", \$organism,
 	     "data=s", \$data_file,
 	     "terms=s{1,}", \@terms,
 	     "run_mode=s", \$run_mode,
 	     "data_type=s", \$data_type,
 	     "search_mode=s", \$search_mode,
+	     "cnv_cutoff=f", \$cnv_cutoff,
 	     "p_value=f", \$p_val,
+	     "evcode=s", \$GO_evcode_filter,
     );
 if ($run_mode eq 'CGI'){
     print'';
 }
 
-unless ($terms[0] and $data_file and $data_type) {
+unless ($terms[0] and $data_file and $data_type and $organism) {
     warn "$usage\n";
     exit();
 }
@@ -48,7 +53,7 @@ $data_file = *IN;
 
 #TEST DATA
 #my @go_hits = qw(CASR CDH23 GAB3 GLS);
-unshift(@terms,$search_mode,$organism);
+unshift(@terms,$search_mode,$organism,$GO_evcode_filter);
 my @go_hits = go_terms(@terms);
 #print Dumper @go_hits;
 print '';
@@ -65,7 +70,7 @@ if ($data_type eq 'cufflinks') {
     $parsed_data = parse_cufflinks($data_file);
 }
 if ($data_type eq 'CGH_array') {
-    $parsed_data = parse_cgh($data_file);
+    $parsed_data = parse_cgh($data_file, $cnv_cutoff);
 }
 %genes = %{$parsed_data};
 #print Dumper %genes;

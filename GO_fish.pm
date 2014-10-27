@@ -13,6 +13,9 @@ sub go_terms{
     my $apph = GO::AppHandle->connect(\@org);
     my $mode = shift;
     my $genus = shift;
+    my $evcode_string = shift;
+    my @evcodes = split ("--", $evcode_string);
+    $apph->filters({evcodes=>[@evcodes]});
     my @sterm = @_;
 
     my @golist;
@@ -164,6 +167,9 @@ sub parse_cgh{
 #This is a subroutine and will be transferred over to a module with other parsing subroutines.
 
 my $input = shift;
+my $cnv_cutoff = shift;
+
+unless ($cnv_cutoff){$cnv_cutoff =0}
 #open(IN, '<', $input) or die "can't open file $input $!\n";
 
 my @features;
@@ -211,19 +217,33 @@ while(my $line = <$input>){
 			$start = $features[3];
 			$stop = $features[4];
 			$probeset = $chr . ':' . $start . '-' . $stop;
-	    
-			if($features[6]>0){
-			    $cnv = $features[6];
+			
+			if($cnv_cutoff == 0){
+			    if($features[6]>$cnv_cutoff){
+				$cnv = $features[6];
+			    }
+			    elsif($features[7]<$cnv_cutoff){
+				$cnv = $features[7];
+			    }       
 			}
-	
-			elsif($features[7]<0){
-			    $cnv = $features[7];
+
+			else{
+			if ($cnv_cutoff > 0){ 
+			    if($features[6]>$cnv_cutoff){
+				$cnv = $features[6];
+			       }
+			    else{next;}
 			}
-	    
+			if ($cnv_cutoff < 0){   
+			    if($features[7]<$cnv_cutoff){
+				$cnv = $features[7];
+			    }
+			    else{next;}
+			}}
 			$genes{$individualgene}{$probeset}{$sample}{'p-val'} = $features[8];
 			$genes{$individualgene}{$probeset}{$sample}{'CNV'} = $cnv;
+			
 		    }
-		
 	    }
 	    
 #--------------------------------------------------------------------#
@@ -236,16 +256,29 @@ while(my $line = <$input>){
 	    $start = $features[3];
 	    $stop = $features[4];
 	    $probeset = $chr . ':' . $start . '-' . $stop;
-	    
-	    if($features[6]>0){
-		$cnv = $features[6];
+
+	               if($cnv_cutoff == 0){
+			    if($features[6]>$cnv_cutoff){
+				$cnv = $features[6];
+			    }
+			    elsif($features[7]<$cnv_cutoff){
+				$cnv = $features[7];
+			    }       
+		       }
+	    else{
+	               if ($cnv_cutoff > 0){ 
+			   if($features[6]>$cnv_cutoff){
+				$cnv = $features[6];
+			   }
+			   else{next;}
+			}
+		       if ($cnv_cutoff < 0){   
+			   if($features[7]<$cnv_cutoff){
+				$cnv = $features[7];
+			   }
+			   else{next;}
+		       }
 	    }
-	
-	    elsif($features[7]<0){
-		$cnv = $features[7];
-	    }
-	   
-	    
 	       $genes{$id}{$probeset}{$sample}{'p-val'} = $features[8];
 	       $genes{$id}{$probeset}{$sample}{'CNV'} = $cnv;
 	 }
