@@ -43,21 +43,19 @@ print'<head>
   <a name="top"></a>    
 
 
-<div class="container-fluid"><h1><a href=""#"">Search gene data with GO terms</a><h3>Model Organism</h3></h1><p>Source organism genus (e.g. Homo, Mus, Drosophila):</p>',start_multipart_form,textarea(-name=>'Genus',-rows=>1,-cols=>40),br,br,h3("Input data"),h4("Data Type:  "), radio_group(-name=>'data_type',-rows=>'3' ,-value=>\@data_types,-default=>$data_types[0]),br,"For cuffdiff: use a p-value cut-off instead of the cuffdiff signicance call:         ", textfield(-name=>'p_value'),br,br,
+<div class="container-fluid"><h1><a href=""#"">Search gene data with GO terms</a><h3>Model Organism</h3></h1><p>Source organism genus (e.g. Homo, Mus, Drosophila):</p>',start_multipart_form,textarea(-name=>'Genus',-rows=>1,-cols=>53),br,h3("Input data"),br,h5("Data Type:  "),'<div class="radio">',radio_group(-name=>'data_type',-rows=>'3' ,-value=>\@data_types,-default=>$data_types[0]),'</div>',br,"For cuffdiff: use a p-value cut-off instead of the cuffdiff signicance call:         ", textfield(-name=>'p_value'),br,br,
 
 "For CGH_array: Amplification/Deletion cutoff value:   ",textfield(-name=>'cnv_cutoff'),br,
 
 br,"Upload file here: ",filefield(-name=>'upload_data'),br,h3("GO search"),
 
-"Search parameters:",br,"One per line, can use GO terms (GO:0044822) or key words (use single quotes to group key words)",br,
+"Search parameters:",br,"One per line, can use GO terms (e.g. GO:0044822) or key words (e.g. DNA Methylation).",br,
 
-textarea(-name=>'GO_terms and search terms', -rows=>5, -cols=>40),br,br,
+textarea(-name=>'GO_terms and search terms', -rows=>7, -cols=>90),br,br,
 
-br,"Allowed GO evidence codes","<div class='checkbox'>",checkbox_group(-name=>'ev_codes', -column=> 1, -values => ['IDA','IPI','IGI','IMP','IEP','TAS','IC','NAS','IBA','IEA','ISS','ISO','RCA'], -defaults=> ['IDA','IPI','IGI','IMP','IEP']),"</div>",br,a({href=>"http://geneontology.org/page/guide-go-evidence-codes"},"Meaning of GO evidence codes"),br,br,
+"Search type:", br, '<div class="radio">',radio_group(-name=>'Search_Mode', -value=>\@search_modes, -rows=>2, -default=>$search_modes[0]),br, submit('Search'),'</div>',
 
-"Search type:", br, br, radio_group(-name=>'Search_Mode', -value=>\@search_modes, -default=>$search_modes[0]),br,
-
-br, submit('Search'),'</div>',end_form,hr;
+br,"Allowed GO evidence codes","<div class='checkbox'>",checkbox_group(-name=>'ev_codes', -rows =>14, -values => ['IDA','IPI','IGI','IMP','IEP','TAS','IC','NAS','IBA','IEA','ISS','ISO','RCA'], -defaults=> ['IDA','IPI','IGI','IMP','IEP']),"</div>",br,a({href=>"http://geneontology.org/page/guide-go-evidence-codes"},"Meaning of GO evidence codes"),br,end_form,hr;
 
 
 my $organism = param ('Genus');
