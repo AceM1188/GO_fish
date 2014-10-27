@@ -3,11 +3,12 @@ use strict;
 use warnings;
 use lib "/home/gofish";
 use Getopt::Long;
-use GO_Terms;
-use parse_cuffdiff;
-use parse_cufflinks;
-use parse_cgh;
-use Data::Dumper;
+#use GO_Terms;
+use GO_fish;
+#use parse_cuffdiff;
+#use parse_cufflinks;
+#use parse_cgh;
+#use Data::Dumper;
 
 #-------------------------------------------#
 #Can enter default values for arguments here#
@@ -17,14 +18,16 @@ my $search_mode= 'AND';
 my $run_mode = 'command'; #defaults to command line unless called by cgi script
 my $data_file;
 my $data_type;
+my $p_val;
 my @terms; #= 'GO:0045666' #test data for Neurog1
-my $usage = "\nsyntax:\nGO_fish.pl --organism Genus --data data.file --data_type cuffdiff/cufflinks --search_mode 'AND'/'OR' --terms GO:0000000/'key words'\n"; 
+my $usage = "\nsyntax:\nGO_fish.pl --organism Genus --data data.file --data_type cuffdiff/cufflinks --search_mode 'AND'/'OR' --terms GO:0000000/'key words'\nBy default cuffdiff data is filtered by the cuffdiff significance call.\nIf --p_value is set to a value it will use p-value to filter instead"; 
 GetOptions ( "organism=s", \$organism,
 	     "data=s", \$data_file,
 	     "terms=s{1,}", \@terms,
 	     "run_mode=s", \$run_mode,
 	     "data_type=s", \$data_type,
 	     "search_mode=s", \$search_mode,
+	     "p_value=f", \$p_val,
     );
 if ($run_mode eq 'CGI'){
     print'';
@@ -56,7 +59,7 @@ print '';
 my %genes;
 my $parsed_data;
 if ($data_type eq 'cuffdiff') {
-    $parsed_data = parse_cuffdiff($data_file);
+    $parsed_data = parse_cuffdiff($data_file, $p_val);
 }
 if ($data_type eq 'cufflinks') {
     $parsed_data = parse_cufflinks($data_file);

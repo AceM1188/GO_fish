@@ -2,7 +2,7 @@ package parse_cufflinks;
 #File: parse_cufflinks.pm
 use warnings;
 use strict;
-use Data::Dumper;
+#use Data::Dumper;
 use base 'Exporter';
 our @EXPORT = qw(parse_cufflinks);
 sub parse_cufflinks{
